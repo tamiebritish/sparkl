@@ -63,6 +63,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
 
 /* GRID */
 .browse-grid{padding:2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto}
+.empty-state{grid-column:1/-1;background:var(--white);border:1px dashed var(--border);border-radius:14px;padding:2rem;text-align:center;color:var(--bark-mid)}
 .cleaner-card{background:var(--white);border-radius:16px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.25s;position:relative}
 .cleaner-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(44,35,24,0.1);border-color:var(--sage-mid)}
 .card-image{height:200px;position:relative;overflow:hidden}
@@ -248,8 +249,8 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     <h1>Your <em>same cleaner,</em><br>every single time.</h1>
     <p>Browse verified independent cleaners. Choose your fit. Book with confidence — not just once, but again and again.</p>
     <div class="hero-search">
-      <input type="text" placeholder="Neighbourhood, e.g. Westdale, Durand…" />
-      <button>Find cleaners</button>
+      <input id="searchInput" type="text" placeholder="Neighbourhood, e.g. Westdale, Durand…" />
+      <button onclick="applyFilters()">Find cleaners</button>
     </div>
     <div class="hero-trust">
       <div class="trust-item"><span class="trust-dot"></span>All cleaners vetted & approved</div>
@@ -294,7 +295,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem
     <button class="filter-pill" onclick="filterTag(this,'Move In/Out')">Move In/Out</button>
     <button class="filter-pill" onclick="filterTag(this,'Post Reno')">Post Reno</button>
     <button class="filter-pill" onclick="filterTag(this,'Top Rated')">⭐ Top Rated</button>
-    <select class="sort-select"><option>Sort: Recommended</option><option>Price: Low to High</option><option>Price: High to Low</option><option>Highest Rated</option><option>Most Reviewed</option></select>
+    <select id="sortSelect" class="sort-select" onchange="applyFilters()"><option>Sort: Recommended</option><option>Price: Low to High</option><option>Price: High to Low</option><option>Highest Rated</option><option>Most Reviewed</option></select>
   </div>
 
   <div class="browse-grid" id="cleanerGrid"></div>
@@ -547,6 +548,7 @@ const cleaners = [
 
 let currentCleaner = null;
 let bookingStep = 0;
+let activeTag = 'All';
 
 function showPage(p){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
@@ -559,6 +561,10 @@ function showPage(p){
 
 function renderGrid(cleanerList){
   const grid=document.getElementById('cleanerGrid');
+  if(cleanerList.length===0){
+    grid.innerHTML='<div class="empty-state"><h3 style="margin-bottom:8px">No cleaners found</h3><p>Try another neighbourhood, service tag, or sort option.</p></div>';
+    return;
+  }
   grid.innerHTML=cleanerList.map(c=>`
     <div class="cleaner-card" onclick="showProfile(${c.id})">
       <div class="card-image" style="background:${c.bg}">
@@ -585,9 +591,35 @@ function renderGrid(cleanerList){
 function filterTag(el,tag){
   document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
-  if(tag==='All'){renderGrid(cleaners);return;}
-  if(tag==='Top Rated'){renderGrid(cleaners.filter(c=>c.badges.includes('top')));return;}
-  renderGrid(cleaners.filter(c=>c.tags.includes(tag)));
+  activeTag=tag;
+  applyFilters();
+}
+
+function applyFilters(){
+  const search=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+  const sortLabel=document.getElementById('sortSelect')?.value||'Sort: Recommended';
+  let filtered=[...cleaners];
+
+  if(activeTag!=='All'){
+    filtered=activeTag==='Top Rated'
+      ? filtered.filter(c=>c.badges.includes('top'))
+      : filtered.filter(c=>c.tags.includes(activeTag));
+  }
+
+  if(search){
+    filtered=filtered.filter(c=>
+      c.neighbourhood.toLowerCase().includes(search) ||
+      c.name.toLowerCase().includes(search) ||
+      c.tags.some(tag=>tag.toLowerCase().includes(search))
+    );
+  }
+
+  if(sortLabel==='Price: Low to High') filtered.sort((a,b)=>a.rate-b.rate);
+  if(sortLabel==='Price: High to Low') filtered.sort((a,b)=>b.rate-a.rate);
+  if(sortLabel==='Highest Rated') filtered.sort((a,b)=>b.rating-a.rating);
+  if(sortLabel==='Most Reviewed') filtered.sort((a,b)=>b.reviews-a.reviews);
+
+  renderGrid(filtered);
 }
 
 function showProfile(id){
@@ -686,6 +718,9 @@ function submitOnboarding(){
 }
 
 renderGrid(cleaners);
+document.getElementById('searchInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter') applyFilters();
+});
 </script>
 </body>
 </html>
