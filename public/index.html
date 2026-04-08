@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sparkl · Verified Independent Cleaners</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <nav>
+    <div class="logo">Sparkl<span>.</span></div>
+    <div class="nav-links">
+      <button class="nav-link active" data-page="home">Browse</button>
+      <button class="nav-link" data-page="dashboard">My Bookings</button>
+      <button class="nav-link" data-page="onboard">Apply as Cleaner</button>
+    </div>
+    <button class="nav-cta">Hamilton, ON</button>
+  </nav>
+
+  <main id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-eyebrow">Hamilton's trusted cleaning marketplace</div>
+      <h1>Your <em>same cleaner,</em><br />every single time.</h1>
+      <p>Browse verified independent cleaners. Choose your fit. Book with confidence — not just once, but again and again.</p>
+      <div class="hero-search">
+        <input id="searchInput" type="text" placeholder="Neighbourhood, e.g. Westdale, Durand…" />
+        <button id="searchBtn">Find cleaners</button>
+      </div>
+    </section>
+
+    <section class="filter-bar">
+      <button class="filter-pill active" data-tag="All">All</button>
+      <button class="filter-pill" data-tag="Deep Clean">Deep Clean</button>
+      <button class="filter-pill" data-tag="Regular">Regular</button>
+      <button class="filter-pill" data-tag="Move In/Out">Move In/Out</button>
+      <button class="filter-pill" data-tag="Post Reno">Post Reno</button>
+      <button class="filter-pill" data-tag="Top Rated">⭐ Top Rated</button>
+      <select id="sortSelect" class="sort-select">
+        <option value="recommended">Sort: Recommended</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="rating_desc">Highest Rated</option>
+        <option value="reviews_desc">Most Reviewed</option>
+      </select>
+    </section>
+
+    <section id="cleanerGrid" class="browse-grid"></section>
+  </main>
+
+  <section id="page-profile" class="page">
+    <button class="back-btn" id="backToBrowse">← Back to browse</button>
+    <div class="profile-hero">
+      <div class="profile-inner">
+        <div class="profile-avatar" id="profAvatar"></div>
+        <div class="profile-info">
+          <h2 id="profName"></h2>
+          <p id="profMeta" class="profile-meta"></p>
+          <p id="profBio"></p>
+          <div id="profServices" class="service-list"></div>
+        </div>
+        <div class="book-panel">
+          <div id="profPriceBig" class="book-price-big"></div>
+          <button id="openBookingBtn" class="book-btn-main">Request Booking</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-dashboard" class="page dash-grid">
+    <h2>Client dashboard (Phase 2)</h2>
+    <p class="muted">You can already submit booking requests in Phase 1. Status tracking and accept/decline flow comes next.</p>
+    <div class="booking-list">
+      <div class="booking-list-header"><h3>Recent booking requests</h3><button id="refreshDashboard" class="link-btn">Refresh</button></div>
+      <div id="bookingListBody"></div>
+    </div>
+  </section>
+
+  <section id="page-onboard" class="page onboard-wrap">
+    <h2>Join Sparkl as a cleaner</h2>
+    <p class="muted">Curated marketplace. Applications are reviewed before listing approval.</p>
+
+    <form id="applicationForm" class="onboard-card">
+      <div class="form-row">
+        <div class="form-group"><label>Full name</label><input required name="fullName" /></div>
+        <div class="form-group"><label>Email</label><input required type="email" name="email" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone</label><input required name="phone" /></div>
+        <div class="form-group"><label>Neighbourhood</label><input required name="neighbourhood" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Languages</label><input name="languages" /></div>
+        <div class="form-group"><label>Years experience</label><select required name="yearsExperience"><option value="">Select</option><option>1-2 years</option><option>3-5 years</option><option>5+ years</option></select></div>
+      </div>
+      <div class="form-group"><label>Services offered (comma separated)</label><input required name="services" placeholder="Regular, Deep Clean" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Hourly rate (CAD)</label><input required type="number" min="20" name="hourlyRate" /></div>
+        <div class="form-group"><label>Availability (comma separated)</label><input required name="availability" placeholder="Mon, Tue, Wed" /></div>
+      </div>
+      <div class="form-group"><label>Bio</label><textarea required name="bio"></textarea></div>
+
+      <label class="checkbox-item"><input required type="checkbox" name="independentContractor" /> I understand I am an independent contractor, not an employee of Sparkl.</label>
+      <label class="checkbox-item"><input required type="checkbox" name="backgroundCheck" /> I consent to background verification.</label>
+      <label class="checkbox-item"><input required type="checkbox" name="terms" /> I agree to platform terms and policies.</label>
+      <label class="checkbox-item"><input required type="checkbox" name="noOffPlatform" /> I will not solicit off-platform booking.</label>
+
+      <button class="submit-btn-full" type="submit">Submit Application</button>
+      <p id="applicationMessage" class="form-message"></p>
+    </form>
+  </section>
+
+  <div id="bookingModal" class="modal-overlay">
+    <div class="modal">
+      <h2>Request booking</h2>
+      <form id="bookingForm">
+        <div class="form-row">
+          <div class="form-group"><label>Your name</label><input required name="clientName" /></div>
+          <div class="form-group"><label>Your email</label><input required type="email" name="clientEmail" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Service type</label><select required name="serviceType"><option>Regular clean</option><option>Deep clean</option><option>Move in/out</option></select></div>
+          <div class="form-group"><label>Home size</label><select required name="homeSize"><option>Studio / 1 bed</option><option>2 bedrooms</option><option>3 bedrooms</option><option>4+ bedrooms</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Preferred date</label><input required type="date" name="preferredDate" /></div>
+          <div class="form-group"><label>Preferred time</label><input required type="time" name="preferredTime" /></div>
+        </div>
+        <div class="form-group"><label>Notes</label><textarea name="notes"></textarea></div>
+        <div class="modal-footer">
+          <button type="button" id="closeBookingBtn" class="modal-btn-sec">Cancel</button>
+          <button type="submit" class="modal-btn-pri">Send Request</button>
+        </div>
+        <p id="bookingMessage" class="form-message"></p>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <a href="/legal/terms.html">Terms</a>
+    <a href="/legal/privacy.html">Privacy</a>
+    <a href="/legal/trust-safety.html">Trust &amp; Safety</a>
+    <a href="/legal/contractor-terms.html">Independent Contractor Terms</a>
+  </footer>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
