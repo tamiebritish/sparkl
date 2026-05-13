@@ -21,3 +21,8 @@ Then open: `http://localhost:8080`.
 - Cleaner profile view
 - Booking request modal flow
 - Cleaner application form success state
+
+
+## Trading toolkit
+
+A starter swing-trading toolkit (Yahoo Finance scanner + TradingView webhook server + Polygon enrichment) is available in `trading_toolkit/`.
